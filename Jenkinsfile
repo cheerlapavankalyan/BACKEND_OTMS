@@ -1,11 +1,11 @@
 pipeline {
     agent any
-
+ 
     environment {
         JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64' // Set this to your JDK path
         PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
     }
-
+ 
     stages {
         stage('Checkout') {
             steps {
@@ -14,7 +14,7 @@ pipeline {
                           doGenerateSubmoduleConfigurations: false, 
                           extensions: [], 
                           submoduleCfg: [], 
-                          userRemoteConfigs: [[url: 'git@github.com:cheerlapavankalyan/BACKEND_OTMS.git', credentialsId: 'github']]])
+                          userRemoteConfigs: [[url: 'git@github.com:Adsskk19/OTMS-Backend.git', credentialsId: 'github']]])
             }
         }
         stage('Build') {
@@ -27,15 +27,6 @@ pipeline {
                         }
                     }
                 }
-                /*stage('Build Student Service') {
-                    steps {
-                        dir('StudentService') {
-                            sh 'chmod +x mvnw' // Ensure mvnw is executable
-                            sh 'mvn clean install'
-                        }
-                    }
-                } */
-                
                 stage('Build Quiz Service') {
                     steps {
                         dir('QuizService') {
@@ -60,6 +51,14 @@ pipeline {
                         }
                     }
                 }
+                stage('Build Student Service') {
+                    steps {
+                        dir('StudentService') {
+                            sh 'chmod +x mvnw' // Ensure mvnw is executable
+                            sh 'mvn clean install'
+                        }
+                    }
+                }
                 /*stage('Build API Gateway') {
                     steps {
                         dir('API_Gateway') {
@@ -70,7 +69,7 @@ pipeline {
                 }*/
             }
         }
-
+ 
         stage('Test') {
             parallel {
                 stage('Test Service Registry') {
@@ -81,14 +80,6 @@ pipeline {
                         }
                     }
                 }
-                /*stage('Test Student Service') {
-                    steps {
-                        dir('StudentService') {
-                            sh 'chmod +x mvnw' // Ensure mvnw is executable
-                            sh 'mvn test'
-                        }
-                    }
-                }*/
                 stage('Test Quiz Service') {
                     steps {
                         dir('QuizService') {
@@ -113,20 +104,19 @@ pipeline {
                         }
                     }
                 }
-            }
-        } 
-
-        /*stage('Package') {
-            parallel {
-                stage('Package Student Service') {
+                stage('Test Student Service') {
                     steps {
                         dir('StudentService') {
                             sh 'chmod +x mvnw' // Ensure mvnw is executable
-                            sh 'mvn package'
-                            archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
+                            sh 'mvn test'
                         }
                     }
                 }
+            }
+        }
+ 
+        stage('Package') {
+            parallel { 
                 stage('Package Service Registry') {
                     steps {
                         dir('ServiceRegistry') {
@@ -162,11 +152,20 @@ pipeline {
                             archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
                         }
                     }
-                } 
+                }
+                stage('Package Student Service') {
+                    steps {
+                        dir('StudentService') {
+                            sh 'chmod +x mvnw' // Ensure mvnw is executable
+                            sh 'mvn package'
+                            archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
+                        }
+                    }
+                }
             }
-        }*/
+        }
     }
-
+ 
     post {
         success {
             echo 'Build, Test, and Package steps completed successfully!'
