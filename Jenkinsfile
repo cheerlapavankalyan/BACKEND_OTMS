@@ -14,7 +14,7 @@ pipeline {
                           doGenerateSubmoduleConfigurations: false, 
                           extensions: [], 
                           submoduleCfg: [], 
-                          userRemoteConfigs: [[url: 'git@github.com:cheerlapavankalyan/BACKEND_OTMS.git', credentialsId: 'github']]])
+                          userRemoteConfigs: [[url: 'https://github.com/cheerlapavankalyan/BACKEND_OTMS.git', credentialsId: 'github']]])
             }
         }
         stage('Build') {
