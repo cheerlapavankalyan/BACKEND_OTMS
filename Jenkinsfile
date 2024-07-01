@@ -69,7 +69,15 @@ pipeline {
                 }*/
             }
         }
- 
+ stage('Static Code Analysis') {
+      environment {
+        SONAR_URL = "100.25.201.136:9000"
+      }
+      steps {
+        withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
+          sh 'cd javaproject/spring-boot-app && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
+        }
+      }
         stage('Test') {
             parallel {
                 stage('Test Service Registry') {
