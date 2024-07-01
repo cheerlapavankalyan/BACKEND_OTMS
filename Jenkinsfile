@@ -17,60 +17,76 @@ pipeline {
                           userRemoteConfigs: [[url: 'https://github.com/cheerlapavankalyan/BACKEND_OTMS.git', credentialsId: 'github']]])
             }
         }
-        stage('Build') {
+        stage('Build and Analyze') {
             parallel {
-                stage('Build Service Registry') {
+                stage('Build and Analyze Service Registry') {
                     steps {
                         dir('ServiceRegistry') {
                             sh 'chmod +x mvnw' // Ensure mvnw is executable
                             sh 'mvn clean install'
+                            script {
+                                withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
+                                    sh 'mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=http://54.227.128.41:9000'
+                                }
+                            }
                         }
                     }
                 }
-                stage('Build Quiz Service') {
+                stage('Build and Analyze Quiz Service') {
                     steps {
                         dir('QuizService') {
                             sh 'chmod +x mvnw' // Ensure mvnw is executable
                             sh 'mvn clean install'
+                            script {
+                                withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
+                                    sh 'mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=http://your_sonarqube_server'
+                                }
+                            }
                         }
                     }
                 }
-                stage('Build Question Service') {
+                stage('Build and Analyze Question Service') {
                     steps {
                         dir('QuestionService') {
                             sh 'chmod +x mvnw' // Ensure mvnw is executable
                             sh 'mvn clean install'
+                            script {
+                                withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
+                                    sh 'mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=http://54.227.128.41:9000'
+                                }
+                            }
                         }
                     }
                 }
-                stage('Build Feedback Service') {
+                stage('Build and Analyze Feedback Service') {
                     steps {
                         dir('FeedbackService') {
                             sh 'chmod +x mvnw' // Ensure mvnw is executable
                             sh 'mvn clean install'
+                            script {
+                                withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
+                                    sh 'mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=http://54.227.128.41:9000'
+                                }
+                            }
                         }
                     }
                 }
-                stage('Build Student Service') {
+                stage('Build and Analyze Student Service') {
                     steps {
                         dir('StudentService') {
                             sh 'chmod +x mvnw' // Ensure mvnw is executable
                             sh 'mvn clean install'
+                            script {
+                                withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
+                                    sh 'mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=http://54.227.128.41:9000'
+                                }
+                            }
                         }
                     }
                 }
             }
         }
-        stage('Static Code Analysis') {
-            environment {
-                SONAR_URL = "http://35.153.19.1:9000"
-            }
-            steps {
-                withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
-                    sh 'cd BACKEND_OTMS/FeedbackService && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
-                }
-            }
-        }
+ 
         stage('Test') {
             parallel {
                 stage('Test Service Registry') {
