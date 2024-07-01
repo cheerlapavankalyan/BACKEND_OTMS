@@ -43,7 +43,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Build Feedback') {
+                stage('Build Feedback Service') {
                     steps {
                         dir('FeedbackService') {
                             sh 'chmod +x mvnw' // Ensure mvnw is executable
@@ -59,25 +59,18 @@ pipeline {
                         }
                     }
                 }
-                /*stage('Build API Gateway') {
-                    steps {
-                        dir('API_Gateway') {
-                            sh 'chmod +x mvnw' // Ensure mvnw is executable
-                            sh 'mvn clean install'
-                        }
-                    }
-                }*/
             }
         }
- stage('Static Code Analysis') {
-      environment {
-        SONAR_URL = "100.25.201.136:9000"
-      }
-      steps {
-        withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
-          sh 'cd BACKEND_OTMS/FeedbackService && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
+        stage('Static Code Analysis') {
+            environment {
+                SONAR_URL = "http://100.25.201.136:9000"
+            }
+            steps {
+                withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
+                    sh 'cd BACKEND_OTMS/FeedbackService && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
+                }
+            }
         }
-      }
         stage('Test') {
             parallel {
                 stage('Test Service Registry') {
@@ -104,7 +97,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Test Feedback service') {
+                stage('Test Feedback Service') {
                     steps {
                         dir('FeedbackService') {
                             sh 'chmod +x mvnw' // Ensure mvnw is executable
